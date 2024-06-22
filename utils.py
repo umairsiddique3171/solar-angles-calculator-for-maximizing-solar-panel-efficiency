@@ -1,46 +1,58 @@
 import math
+import time
+import datetime
+import streamlit as st
+import base64
 
-"""
-Using the geometric correlations presented relations presented in this chapter, develop a computer  program (Matlab, C++ etc.) that estimates all solar angles according to the latitude, day of  year, time of the day, and slope of surface.
-"""
-
-
-date = 21
 latitude = 10
-time_of_day = "12:32 am"
-surface_slope = 21
+tm = "23:30:00"
+dt = "2014-07-16"
 
-def n(date):
-    pass
+def n(dt):
+    dt = str(dt)
+    dt = dt.split("-")
+    if ('0' in dt[1]) or ('0' in dt[2]):
+        y,m,d = int(dt[0]),int(dt[1][1:]),int(dt[1][1:])
+    else:
+        y,m,d = int(dt[0]),int(dt[1]),int(dt[2])
+    dt = datetime.date(y,m,d)
+    return int(dt.timetuple().tm_yday)
 
-def hour_angle(time):
-    time = time.split(":")
-    hours = int(time[0])
-    minutes = int(time[0])
+def hour_angle(tm):
+    tm = str(tm)
+    tm = tm.split(":")
+    hours = int(tm[0])
+    minutes = int(tm[1])
     if hours > 12 : 
-        return (-1)*(12-hours)*(60)*(0.25)
-    return (hours-12)(60)(0.25)
+        return ((hours-12)*(60) + minutes)*(0.25)
+    return ((12-hours)*(60) - minutes)*(60)*(0.25)
 
+def declinition_angle(dt):
+    return 23.45*math.sin(360*((284*n(dt))/365))
 
-def declinition_angle(date):
-    return 23.45*math.sin(360*((284*n(date))/365))
+def solar_altitude_angle(latitude,tm,dt):
+    return math.asin((math.cos(latitude)*math.cos(hour_angle(tm))*math.cos(declinition_angle(dt)))+(math.sin(latitude)*math.sin(declinition_angle(dt))))
 
+def sunset_sunrise_angle(latitude,dt):
+    return math.acos(-1*math.tan(declinition_angle(dt))*math.tan(latitude))
 
-def solar_altitude_angle(latitude,time,date):
-    return math.asin((math.cos(latitude)*math.cos(hour_angle(time))*math.cos(declinition_angle(n(date))))+(math.sin(latitude)*math.sin(declinition_angle(n(date)))))
+def zenith_angle(latitude,tm,dt):
+    return 90 - solar_altitude_angle(latitude,tm,dt)
 
+def solar_azimuth_angle(latitude,tm,dt):
+    return math.asin((math.cos(declinition_angle(dt))*math.sin(hour_angle(tm)))/math.cos(solar_altitude_angle(latitude,tm,dt)))
 
-def sunset_sunrise_angle(latitude,date):
-    return math.acos(-1*math.tan(declinition_angle(n(date)))*math.tan(latitude))
+def set_background(img_file):
 
-
-def zenith_angle(latitude,time,date):
-    return 90 - solar_altitude_angle(latitude,time,date)
-
-
-def solar_azimuth_angle(latitude,time,date):
-    return math.asin((math.cos(declinition_angle(n(date)))*math.sin(hour_angle(time)))/math.cos(solar_altitude_angle(latitude,time,date)))
-
-
-def angle_of_incidence(latitude,time,date,surface_slope):
-    pass
+    with open(img_file, "rb") as f:
+        img_data = f.read()
+    b64_encoded = base64.b64encode(img_data).decode()
+    style = f"""
+        <style>
+        .stApp {{
+            background-image: url(data:image/png;base64,{b64_encoded});
+            background-size: cover;
+        }}
+        </style>
+    """
+    st.markdown(style, unsafe_allow_html=True)
