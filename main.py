@@ -45,15 +45,25 @@ if dt and tm and latitude is not None:
     if button: 
         st.success("Submitted Successfully")
         st.markdown("---")
-        df = pd.DataFrame({
-            "Hour Angle":f"{hour_angle(tm)}°",
-            "Declinition Angle":f"{declinition_angle(dt)}°",
-            "Solar Altitude Angle":f"{solar_altitude_angle(latitude,tm,dt)}°",
-            "Sunset Sunrise Angle":f"{sunset_sunrise_angle(latitude,dt)}°",
-            "Zenith Angle":f"{zenith_angle(latitude,tm,dt)}°",
-            "Solar Azimuth Angle":f"{solar_azimuth_angle(latitude,tm,dt)}°"
-            })
-        st.table(df)
+        try : 
+            df = pd.DataFrame({
+                "Solar Angles" : ["Hour Angle",
+                                "Declinition Angle",
+                                "Solar Altitude Angle",
+                                "Sunset Sunrise Angle",
+                                "Zenith Angle",
+                                "Solar Azimuth Angle"],
+                "Calculated Values" : [f"{hour_angle(tm):.3f}°",
+                                    f"{declinition_angle(dt):.3f}°",
+                                    f"{solar_altitude_angle(latitude,tm,dt):.3f}°",
+                                    f"{sunset_sunrise_angle(latitude,dt):.3f}°",
+                                    f"{zenith_angle(latitude,tm,dt):.3f}°",
+                                    f"{solar_azimuth_angle(latitude,tm,dt):.3f}°"]
+                })
+            st.table(df)
+        except Exception as e: 
+            print(Exception)
+            st.warning("Some calculated angles are out of domain. Please use appropriate value of latitude.")
 else : 
     if button: 
         st.warning("Please fill in all the fields before submission")

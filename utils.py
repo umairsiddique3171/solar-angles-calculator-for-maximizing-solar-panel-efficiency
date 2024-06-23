@@ -4,10 +4,6 @@ import datetime
 import streamlit as st
 import base64
 
-latitude = 10
-tm = "23:30:00"
-dt = "2014-07-16"
-
 def n(dt):
     dt = str(dt)
     dt = dt.split("-")
@@ -25,22 +21,22 @@ def hour_angle(tm):
     minutes = int(tm[1])
     if hours > 12 : 
         return ((hours-12)*(60) + minutes)*(0.25)
-    return ((12-hours)*(60) - minutes)*(60)*(0.25)
+    return ((12-hours)*(60) - minutes)*(0.25)
 
 def declinition_angle(dt):
-    return 23.45*math.sin(360*((284*n(dt))/365))
+    return 23.45*math.sin(math.radians(360*((284+n(dt))/365)))
 
 def solar_altitude_angle(latitude,tm,dt):
-    return math.asin((math.cos(latitude)*math.cos(hour_angle(tm))*math.cos(declinition_angle(dt)))+(math.sin(latitude)*math.sin(declinition_angle(dt))))
+    return math.degrees(math.asin((math.cos(math.radians(latitude))*math.cos(math.radians(hour_angle(tm)))*math.cos(math.radians(declinition_angle(dt))))+(math.sin(math.radians(latitude))*math.sin(math.radians(declinition_angle(dt))))))
 
 def sunset_sunrise_angle(latitude,dt):
-    return math.acos(-1*math.tan(declinition_angle(dt))*math.tan(latitude))
+    return math.degrees(math.acos((-1)*(math.tan(math.radians(declinition_angle(dt))))*(math.tan(math.radians(latitude)))))
 
 def zenith_angle(latitude,tm,dt):
     return 90 - solar_altitude_angle(latitude,tm,dt)
 
 def solar_azimuth_angle(latitude,tm,dt):
-    return math.asin((math.cos(declinition_angle(dt))*math.sin(hour_angle(tm)))/math.cos(solar_altitude_angle(latitude,tm,dt)))
+    return math.degrees(math.asin((math.cos(math.radians(declinition_angle(dt)))*math.sin(math.radians(hour_angle(tm))))/math.cos(math.radians(solar_altitude_angle(latitude,tm,dt)))))
 
 def set_background(img_file):
 
