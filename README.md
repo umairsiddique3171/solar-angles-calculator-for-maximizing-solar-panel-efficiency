@@ -40,7 +40,7 @@ To run the application locally, follow these steps:
 5. **Open a web browser and navigate to the provided ``URL``.**
 
 ## Acknowledgements
-
+- J. A. Duffie and W. A. Beckman, Solar Engineering of Thermal Processes, 4th ed. Hoboken, NJ: John Wiley & Sons, 2013.
 ## License
 
 This project is licensed under the [MIT License](https://github.com/umairsiddique3171/solar-angles-calculator-for-maximizing-solar-panel-efficiency/blob/main/LICENSE).
